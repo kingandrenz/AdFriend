@@ -1,31 +1,50 @@
-import { motivationQuotes } from "./api/motivationQuotesApi.js";
-import { techQuotes } from "./api/techQuotesApi.js";
-import { activityReminder } from "./api/activityReminderApi.js";
+import { motivationQuotes } from "../api/motivationQuotesApi.js";
+import { activityReminder } from "../api/activityReminderApi.js";
+import { techQuotes } from "../api/techQuotesApi.js";
 
-// function to replace ad elements
 function replaceAds() {
-  const adElements = document.querySelectorAll('[class*="ad", [id*="ad"');
+  const adElements = document.querySelectorAll('[class*="ad"], [id*="ad"]');
 
-  adElements.forEach((ad) => {
+  adElements.forEach(async (ad) => {
     const widget = document.createElement("div");
     widget.style.border = "2px solid #4CAF50";
     widget.style.padding = "10px";
     widget.style.margin = "10px 0";
-    widget.style.backgroundColor = "e8f5e9";
-    widget.innerHTML = generateWidgetContent(); // A function to generate dynamic content
+    widget.style.backgroundColor = "#e8f5e9"; // Note the '#' for valid CSS color
 
-    // replace ad element with the new widget
+    // Await the async content before setting innerHTML
+    widget.innerHTML = await getRandomWidgetContent();
+
+    // Replace ad element with the new widget
     ad.parentNode.replaceChild(widget, ad);
   });
 }
 
-function generateWidgetContent() {
-  const widgets = [
-    '<strong>Motivational Quote:</strong> "Believe in yourself and all that you are!"',
-    '<strong>Activity Reminder:</strong> "Have you done your burpees today?"',
-    '<strong>Fun Fact:</strong> "Did you know honey never spoils?"',
-    '<strong>Mindfulness Tip:</strong> "Take a deep breath and smile."',
-  ];
-
-  return widgets[Math.floor(Math.random() * widgets.length)];
+async function getRandomWidgetContent() {
+  const category = Math.floor(Math.random() * 3);
+  try {
+    switch (category) {
+      case 0: {
+        const data = await motivationQuotes();
+        return `<strong>Motivational Quote:</strong> "${data[0].q}" — ${data[0].a}`;
+      }
+      case 1: {
+        const data = await techQuotes();
+        return `<strong>Tech Quote:</strong> "${data.quote}" — ${data.author}`;
+      }
+      case 2: {
+        const data = await activityReminder();
+        console.log(`techQuotes: ${data.value}`);
+        return `<strong>Activity Reminder:</strong> ${data.value}`;
+      }
+      default:
+        return "No widget available";
+    }
+  } catch (error) {
+    console.error("Failed to fetch widget content:", error);
+    return "Error fetching content.";
+  }
 }
+
+// Wait until the page is fully loaded before running replaceAds
+window.addEventListener("load", replaceAds);

@@ -4,19 +4,25 @@
   "description": "intercepts and replaces ad elements on web pages with customizable, positive content widgets.",
   "version": "1.0",
   "action": {
-    "default_popup": "popup/popup.html",
-    "icons": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+    "default_popup": "popup/popup.html"
   },
-  "permissions": ["activateTab", "scripting"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "content_scripts": [
     {
-      "matches": ["<all_urls"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
+      "matches": ["<all_urls>"],
+      "js": ["dist/bundle.js"],
+      "run_at": "document_idle",
+      "type": "module"
     }
+  ],
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "https://zenquotes.io/*",
+    "https://api.quotable.io/*",
+    "http://numbersapi.com/*"
   ]
 }
