@@ -1,6 +1,6 @@
 const REMINDER_API = "https://api.chucknorris.io/jokes/random";
 
-export const activityReminder = async () => {
+export const randomJokes = async () => {
   try {
     const response = await fetch(REMINDER_API);
     const data = await response.json();
